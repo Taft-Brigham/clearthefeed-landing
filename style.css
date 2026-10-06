@@ -1,0 +1,163 @@
+:root {
+    --off-white: #FAFAF4;
+    --near-black: #111111;
+    --electric-lime: #B7FF00;
+    --soft-yellow: #FFE45C;
+    --deep-green: #063B2D;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--off-white);
+    color: var(--near-black);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+nav {
+    padding: 2rem;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.logo {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+}
+
+.lime {
+    color: var(--electric-lime);
+    text-shadow: 1px 1px 0 #000;
+    /* Makes it pop on light bg */
+}
+
+.hero {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    text-align: center;
+}
+
+.hero-content {
+    max-width: 700px;
+}
+
+h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(3rem, 8vw, 5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    letter-spacing: -1px;
+}
+
+.animation-container {
+    height: 80px;
+    margin: 2rem 0;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.noise-word {
+    font-family: 'Outfit', sans-serif;
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--near-black);
+    position: relative;
+    transition: all 0.5s ease;
+}
+
+.noise-word.strike {
+    text-decoration: line-through;
+    text-decoration-color: var(--electric-lime);
+    text-decoration-thickness: 8px;
+    opacity: 0.5;
+}
+
+.noise-word.cleared {
+    color: var(--deep-green);
+    text-decoration: none;
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.doodle-arrow {
+    font-family: 'Caveat', cursive;
+    font-size: 3rem;
+    color: var(--electric-lime);
+    position: absolute;
+    right: 20%;
+    top: -20px;
+    transform: rotate(15deg);
+}
+
+.subtitle {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+    color: #444;
+}
+
+form {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+input[type="email"] {
+    padding: 15px 20px;
+    font-size: 1rem;
+    border: 2px solid var(--near-black);
+    border-radius: 8px;
+    width: 300px;
+    background: transparent;
+    font-family: 'Inter', sans-serif;
+}
+
+input[type="email"]:focus {
+    outline: none;
+    border-color: var(--deep-green);
+}
+
+.lime-btn {
+    background-color: var(--electric-lime);
+    color: var(--near-black);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 900;
+    font-size: 1.1rem;
+    padding: 15px 30px;
+    border: 2px solid var(--near-black);
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--near-black);
+    transition: all 0.2s ease;
+}
+
+.lime-btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--near-black);
+}
+
+.doodle-note {
+    font-family: 'Caveat', cursive;
+    font-size: 1.5rem;
+    color: var(--deep-green);
+    margin-top: 1.5rem;
+    transform: rotate(-2deg);
+}
