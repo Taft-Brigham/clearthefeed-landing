@@ -35,9 +35,30 @@ function animateFeed() {
 animateFeed();
 
 // Basic form handling
-document.getElementById('capture-form').addEventListener('submit', (e) => {
+document.getElementById('capture-form').addEventListener('submit', function(e) {
     e.preventDefault();
-    const btn = e.target.querySelector('button');
-    btn.textContent = "YOU'RE IN ✓";
+    
+    const form = e.target;
+    const btn = form.querySelector('button');
+    const formData = new FormData(form);
+
+    // Change button state to show it's working
+    btn.textContent = "CLEARING...";
     btn.style.backgroundColor = "var(--soft-yellow)";
+
+    fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(formData).toString()
+    })
+    .then(() => {
+        // Success state
+        btn.textContent = "YOU'RE IN ✓";
+        btn.style.backgroundColor = "var(--electric-lime)";
+        form.querySelector('input').value = ''; // clear the input
+    })
+    .catch((error) => {
+        btn.textContent = "ERROR. TRY AGAIN.";
+        console.error("Form submission error:", error);
+    });
 });
