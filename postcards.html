@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClearTheFeed | Daily Reset</title>
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    <link rel="alternate icon" type="image/png" href="/images/favicon.png">
+    <style>
+        /* CSS Variables matching your brand identity */
+        :root {
+            --bg-color: #FAFAF4;
+            --brand-dark: #111111;
+            --brand-lime: #B7FF00;
+            --text-muted: #666666;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* The Social Media Card Container */
+        .feed-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 470px;
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Card Header */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            background-color: var(--brand-dark);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4px;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .handle {
+            font-weight: 800;
+            color: var(--brand-dark);
+            font-size: 14px;
+            letter-spacing: -0.2px;
+        }
+
+        .day-badge {
+            background-color: var(--brand-lime);
+            color: var(--brand-dark);
+            font-size: 12px;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Carousel Layout */
+        .carousel-wrapper {
+            position: relative;
+            width: 100%;
+            /* 4:5 Aspect Ratio for perfect social media sizing */
+            aspect-ratio: 4 / 5;
+            background-color: var(--brand-dark);
+        }
+
+        .carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            /* Smooth momentum scrolling on iOS */
+            width: 100%;
+            height: 100%;
+            scrollbar-width: none;
+            /* Hide scrollbar Firefox */
+        }
+
+        .carousel::-webkit-scrollbar {
+            display: none;
+            /* Hide scrollbar Chrome/Safari */
+        }
+
+        .slide {
+            scroll-snap-align: center;
+            flex: 0 0 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Desktop Navigation Arrows */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(17, 17, 17, 0.85);
+            color: var(--brand-lime);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 10;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--brand-dark);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-prev {
+            left: 12px;
+        }
+
+        .nav-next {
+            right: 12px;
+        }
+
+        @media (min-width: 768px) {
+            .nav-btn {
+                display: flex;
+            }
+        }
+
+        /* Footer & Interaction Elements */
+        .card-footer {
+            padding: 16px 18px;
+        }
+
+        .interaction-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        /* Dynamic Pagination Dots */
+        .pagination {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .dot.active {
+            background-color: var(--brand-lime);
+            width: 20px;
+            /* Stretches the active dot */
+            border-radius: 4px;
+        }
+
+        .caption {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--brand-dark);
+        }
+
+        .caption strong {
+            font-weight: 800;
+        }
+
+        .caption span {
+            color: var(--text-muted);
+            margin-left: 5px;
+        }
+
+        /* Error state styling */
+        .error-message {
+            padding: 40px;
+            text-align: center;
+            font-weight: bold;
+            color: var(--brand-dark);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="feed-card" id="app-container">
+        <!-- JavaScript injects the entire component here -->
+    </div>
+
+    <script>
+        // 1. Parse the URL parameter (e.g., ?day=1)
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentDay = urlParams.get('day');
+        const appContainer = document.getElementById('app-container');
+
+        // Check if a valid day exists in the URL
+        if (currentDay && currentDay >= 1 && currentDay <= 14) {
+
+            // 2. Build the UI Structure
+            appContainer.innerHTML = `
+                <div class="card-header">
+                    <div class="user-info">
+                        <div class="avatar">
+                            <!-- Inline SVG Favicon -->
+                            <svg viewBox="0 0 512 512" width="20" height="20">
+                                <path d="M117.8 288.7c-2.3 8.1 4.5 15.6 12.8 14.1l49.8-9c6.3-1.1 10.3-7.5 8.7-13.7-13.5-52.1-1.3-95.8 30.6-118.8 6.1-4.4 6-13.6-.3-17.7-61.9-40.2-108 55.1-101.6 145.1zM286.7 394.2c-52.1 13.5-95.8 1.3-118.8-30.6-4.4-6.1-13.6-6-17.7.3-40.2 61.9 55.1 108 145.1 101.6 8.1-2.3 15.6 4.5 14.1 12.8l-9 49.8c-1.1 6.3-7.5 10.3-13.7 8.7z" fill="#B7FF00" />
+                                <path d="M410.4 186.9c13.5 52.1 1.3 95.8-30.6 118.8-6.1 4.4-6 13.6.3 17.7 61.9 40.2 108-55.1 101.6-145.1 2.3-8.1-4.5-15.6-12.8-14.1l-49.8 9c-6.3 1.1-10.3 7.5-8.7 13.7z" fill="#B7FF00" />
+                                <g fill="#FAFAF4"><rect x="180" y="110" width="152" height="292" rx="30" transform="rotate(-15 256 256)" stroke="#FAFAF4" stroke-width="24" fill="none" /><rect x="210" y="175" width="80" height="18" rx="9" transform="rotate(-15 256 256)" /><rect x="210" y="255" width="80" height="18" rx="9" transform="rotate(-15 256 256)" /></g>
+                                <rect x="210" y="215" width="80" height="18" rx="9" fill="#B7FF00" transform="rotate(-15 256 256)" />
+                                <path d="M380 90c0 15 10 25 25 25s25-10 25-25-10-25-25-25-25 10-25 25z" fill="#B7FF00" transform="scale(1.5) translate(-100, -10)" />
+                            </svg>
+                        </div>
+                        <span class="handle">clearthefeed</span>
+                    </div>
+                    <div class="day-badge">DAY ${currentDay}</div>
+                </div>
+
+                <div class="carousel-wrapper">
+                    <button class="nav-btn nav-prev" onclick="scrollSlide(-1)">←</button>
+                    <button class="nav-btn nav-next" onclick="scrollSlide(1)">→</button>
+                    <div class="carousel" id="carousel">
+                        <!-- Slides injected here -->
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="interaction-bar">
+                        <!-- Spacer to center the dots -->
+                        <div style="width: 24px;"></div> 
+                        
+                        <div class="pagination" id="pagination">
+                            <!-- Dots injected here -->
+                        </div>
+                        
+                        <!-- Share Icon matching brand colors -->
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="#111111" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="cursor: pointer;">
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        </svg>
+                    </div>
+                    <div class="caption">
+                        <strong>clearthefeed</strong> Swipe to uncover today's reset. <span>#buildnuance</span>
+                    </div>
+                </div>
+            `;
+
+            // 3. Inject Images and Dots dynamically
+            const carousel = document.getElementById('carousel');
+            const pagination = document.getElementById('pagination');
+            let slidesHTML = '';
+            let dotsHTML = '';
+
+            for (let i = 1; i <= 5; i++) {
+                // Generates /images/day1-page1.jpg, etc.
+                slidesHTML += `
+                    <div class="slide">
+                        <img src="/images/day${currentDay}-page${i}.jpg" alt="Postcard Page ${i}" loading="lazy">
+                    </div>`;
+                dotsHTML += `<div class="dot ${i === 1 ? 'active' : ''}"></div>`;
+            }
+
+            carousel.innerHTML = slidesHTML;
+            pagination.innerHTML = dotsHTML;
+
+            // 4. Set up the Intersection Observer to animate the dots on swipe
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.dot');
+
+            // This detects which image is currently centered on the screen
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Find the index of the visible slide
+                        const index = Array.from(slides).indexOf(entry.target);
+                        // Remove active class from all dots
+                        dots.forEach(dot => dot.classList.remove('active'));
+                        // Add active class to the corresponding dot
+                        dots[index].classList.add('active');
+                    }
+                });
+            }, {
+                root: carousel,
+                threshold: 0.6 // Triggers when 60% of the slide is visible
+            });
+
+            slides.forEach(slide => observer.observe(slide));
+
+        } else {
+            // Error handling if someone accesses the link directly without a day parameter
+            appContainer.innerHTML = `
+                <div class="error-message">
+                    <svg viewBox="0 0 24 24" width="48" height="48" stroke="#B7FF00" stroke-width="2" fill="none" style="margin-bottom: 15px; background: #111; border-radius: 50%; padding: 10px;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg><br>
+                    Postcard unavailable.<br>Make sure you clicked the exact link provided in your daily email.
+                </div>`;
+        }
+
+        // 5. Desktop Arrow Navigation Logic
+        window.scrollSlide = function (direction) {
+            const carousel = document.getElementById('carousel');
+            const slideWidth = carousel.clientWidth;
+            // Scroll left (-1) or right (+1) by exactly one image width
+            carousel.scrollBy({ left: direction * slideWidth, behavior: 'smooth' });
+        };
+    </script>
+</body>
+
+</html>
