@@ -40,25 +40,40 @@ document.getElementById('capture-form').addEventListener('submit', function(e) {
     
     const form = e.target;
     const btn = form.querySelector('button');
+    const emailInput = form.querySelector('input');
     const formData = new FormData(form);
 
-    // Change button state to show it's working
+    // 1. Loading state
     btn.textContent = "CLEARING...";
     btn.style.backgroundColor = "var(--soft-yellow)";
+    btn.disabled = true; // Prevents spam clicking while submitting
 
+    // 2. Send the data to Netlify
     fetch("/", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams(formData).toString()
     })
     .then(() => {
-        // Success state
+        // 3. Success state
         btn.textContent = "YOU'RE IN ✓";
-        btn.style.backgroundColor = "var(--electric-lime)";
-        form.querySelector('input').value = ''; // clear the input
+        btn.style.backgroundColor = "var(--electric-lime)"; // or "#111111" if you prefer dark mode
+        btn.style.color = "#111111"; // text color
+        emailInput.value = ''; // clear the input
+
+        // 4. The Reset Timer (Wait 3 seconds, then revert)
+        setTimeout(() => {
+            btn.textContent = "Start Clearing →";
+            // Make sure these match your button's original default colors
+            btn.style.backgroundColor = "var(--electric-lime)"; 
+            btn.style.color = "#111111";
+            btn.disabled = false;
+        }, 3000);
     })
     .catch((error) => {
+        // Error state
         btn.textContent = "ERROR. TRY AGAIN.";
+        btn.disabled = false;
         console.error("Form submission error:", error);
     });
 });
